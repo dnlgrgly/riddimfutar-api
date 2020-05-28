@@ -1,6 +1,6 @@
 # riddimfutár-api
 
-This
+This is a Serverless API with Node.js and AWS for the RIDDIMFUTÁR app.
 
 ## Important legal stuff
 
