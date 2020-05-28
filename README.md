@@ -19,7 +19,7 @@ It has a data model that looks like this:
         "sound": "klinikak.mp3",
         "latitude": 4x.xxxx,
         "longitude": 1x.xxxx,
-        "routes": ["0050","0340",..]
+        "routes": ["0050","0340", ...]
     }
 }
 
@@ -27,7 +27,7 @@ It has a data model that looks like this:
     "5100": {
         "type": "bus",
         "sortOrder": 21,
-        "name": "5"
+        "name": "5",
         "direction": "Rákospalota, Kossuth utca",
         "stops": ["F01234", "F01236", ...]
     }
