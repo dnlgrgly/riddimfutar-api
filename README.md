@@ -8,7 +8,7 @@ This is a Serverless API with Node.js and AWS for the RIDDIMFUTÁR app.
 
 ## What will this service do?
 
-This Serverless API serves the Flutter application (that can be found in [this repository](https://github.com/danielgrgly/riddimfutar-ui)) with the nearby stops, the routes, the upcoming stops of the selected route, and the S3 URLs for the sound files (both the music loops and the travel information like the "The next station is Deák Ferenc tér" voice).
+This Serverless API serves the Flutter application (that can be found in [this repository](https://github.com/danielgrgly/riddimfutar-ui)) with the nearby stops, the routes, the upcoming stops of the selected route, and the S3 URLs for the sound files (both the music loops and the local announcments, such as the "The next station is Deák Ferenc tér" recording).
 
 It has a data model that looks like this:
 
