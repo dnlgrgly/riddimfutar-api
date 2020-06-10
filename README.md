@@ -1,6 +1,6 @@
 # riddimfutár-api
 
-This is a Serverless API with Node.js and Google App Engine for the RIDDIMFUTÁR app.
+This is an Express API with Node.js and Google App Engine for the RIDDIMFUTÁR app.
 
 ## Important legal stuff
 
