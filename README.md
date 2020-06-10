@@ -10,34 +10,11 @@ This is an Express API with Node.js and Google App Engine for the RIDDIMFUTÁR a
 
 This Express API serves the Flutter application (that can be found in [this repository](https://github.com/danielgrgly/riddimfutar-ui)) with the nearby stops, the routes, the upcoming stops of the selected route, and the URLs for the sound files (both the music loops and the local announcments, such as the "The next station is Deák Ferenc tér" recording).
 
-It has a data model that looks like this:
+The stop and route data are provided by the BKK via the [BKK FUTÁR API](https://bkkfutar.docs.apiary.io/).
 
-```json
-"stops": {
-    "F01234": {
-        "name": "Semmelweis Klinikák M",
-        "sound": "semmelweisklinikákmetróállomás.mp3",
-        "latitude": 4x.xxxx,
-        "longitude": 1x.xxxx,
-        "routes": ["0050","0340", ...]
-    }
-}
+Our API has the following endpoints:
 
-"routes": {
-    "5100": {
-        "type": "bus",
-        "sortOrder": 21,
-        "name": "5",
-        "direction": "Rákospalota, Kossuth utca",
-        "stops": ["F01234", "F01236", ...]
-    }
-  }
-]
-```
-
-The stop and route data are provided by the [BKK in GTFS format](https://bkk.hu/apps/gtfs/).
-
-It has the following endpoints:
+### if the "Proposal A" wins
 
 - **GET /stops?lat={lat}&lon={lon}**
   - Get nearby stations. Provide the user latitude and longitude in the URL params.
@@ -45,6 +22,15 @@ It has the following endpoints:
   - Get a particular stop's data. Useful for downloading the sound signal of the stop.
 - **GET /routes/{id}**
   - Get a particular route data. Useful to get the upcoming stops on the ride.
+- **GET /musicID**
+  - Get a random music ID that the user will hear for the next stop. The music will be downloaded from the bucket, alongside it's metadata (like the artist and an album art)
+
+### if the "Proposal B" wins
+
+- **GET /vehicles?lat={lat}&lon={lon}**
+  - Get nearby vehicles. Provide the user latitude and longitude in the URL params.
+- **GET /vehicles/{id}**
+  - Get a particular vehicle's data. Useful for downloading the sound signal of the stop.
 - **GET /musicID**
   - Get a random music ID that the user will hear for the next stop. The music will be downloaded from the bucket, alongside it's metadata (like the artist and an album art)
 

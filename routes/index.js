@@ -2,13 +2,11 @@ const { Router } = require("express");
 const router = new Router();
 
 // const fetchMusic = require("./music.js");
-const { routeDetails, nearbyStops, stopDetails } = require("./transport.js");
+const { nearbyVehicles, vehicleDetails } = require("./vehicles.js");
 
 // router.get("/musicID", randomMusic);
 
-router.get("/routes/:id", routeDetails);
-
-router.get("/stops", nearbyStops);
-router.get("/stops/:id", stopDetails);
+router.get("/vehicle", vehicleDetails);
+router.get("/vehicles", nearbyVehicles);
 
 module.exports = router;
