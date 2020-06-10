@@ -1,6 +1,6 @@
 # riddimfutár-api
 
-This is a Serverless API with Node.js and AWS for the RIDDIMFUTÁR app.
+This is a Serverless API with Node.js and Google App Engine for the RIDDIMFUTÁR app.
 
 ## Important legal stuff
 
@@ -8,7 +8,7 @@ This is a Serverless API with Node.js and AWS for the RIDDIMFUTÁR app.
 
 ## What will this service do?
 
-This Serverless API serves the Flutter application (that can be found in [this repository](https://github.com/danielgrgly/riddimfutar-ui)) with the nearby stops, the routes, the upcoming stops of the selected route, and the S3 URLs for the sound files (both the music loops and the local announcments, such as the "The next station is Deák Ferenc tér" recording).
+This Express API serves the Flutter application (that can be found in [this repository](https://github.com/danielgrgly/riddimfutar-ui)) with the nearby stops, the routes, the upcoming stops of the selected route, and the URLs for the sound files (both the music loops and the local announcments, such as the "The next station is Deák Ferenc tér" recording).
 
 It has a data model that looks like this:
 
@@ -16,7 +16,7 @@ It has a data model that looks like this:
 "stops": {
     "F01234": {
         "name": "Semmelweis Klinikák M",
-        "sound": "klinikak.mp3",
+        "sound": "semmelweisklinikákmetróállomás.mp3",
         "latitude": 4x.xxxx,
         "longitude": 1x.xxxx,
         "routes": ["0050","0340", ...]
@@ -40,17 +40,20 @@ The stop and route data are provided by the [BKK in GTFS format](https://bkk.hu/
 It has the following endpoints:
 
 - **GET /stops?lat={lat}&lon={lon}**
-  - Get the nearest 5 stations. Provide the user latitude and longitude in the URL params.
+  - Get nearby stations. Provide the user latitude and longitude in the URL params.
 - **GET /stops/{id}**
   - Get a particular stop's data. Useful for downloading the sound signal of the stop.
 - **GET /routes/{id}**
   - Get a particular route data. Useful to get the upcoming stops on the ride.
 - **GET /musicID**
-  - Get a random music ID that the user will hear for the next stop. The music will be downloaded from the S3 bucket, alongside it's metadata (like the artist and an album art)
+  - Get a random music ID that the user will hear for the next stop. The music will be downloaded from the bucket, alongside it's metadata (like the artist and an album art)
 
 ## How do you start development?
 
-If it's not set up already, install the Serverless CLI by running `npm install -g serverless`, [create an account](https://dashboard.serverless.com/), log in to the CLI (`serverless login`), and connect your sls account with an AWS account.
+```sh
+npm i
+npm run dev
+```
 
 ## About environment variables
 

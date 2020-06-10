@@ -1,0 +1,29 @@
+{
+  "name": "riddimfutar-api",
+  "version": "1.0.0",
+  "description": "This is a Serverless API with Node.js and AWS for the RIDDIMFUTÁR app.",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "node app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/danielgrgly/riddimfutar-api.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/danielgrgly/riddimfutar-api/issues"
+  },
+  "homepage": "https://github.com/danielgrgly/riddimfutar-api#readme",
+  "dependencies": {
+    "@google-cloud/storage": "^5.0.1",
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
+    "express": "^4.17.1"
+  },
+  "devDependencies": {
+    "jest": "^26.0.1"
+  }
+}
