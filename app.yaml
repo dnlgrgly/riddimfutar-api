@@ -1,1 +1,3 @@
 runtime: nodejs10
+env_variables:
+  MONGO_URL: ${{ secrets.MONGO_URL }}
