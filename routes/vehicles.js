@@ -35,15 +35,12 @@ async function nearbyVehicles(req, res) {
 
     res.send(data);
   } catch (e) {
-    console.log(e);
+    console.error(e);
     res.send("error!");
   }
 }
 
 async function vehicleDetails(req, res) {
-  console.log("vehicleDetails");
-  console.log(req.query);
-
   try {
     const response = await futarApi.get("/trip-details.json", {
       params: {
@@ -55,7 +52,7 @@ async function vehicleDetails(req, res) {
 
     res.send(response.data);
   } catch (e) {
-    console.log(e);
+    console.error(e);
     res.send("error!");
   }
 }
