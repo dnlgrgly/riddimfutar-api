@@ -1,4 +1,16 @@
 const axios = require("axios");
+const mongoose = require("mongoose");
+const { Db } = require("mongodb");
+
+mongoose.connect(process.env.MONGO_URL, { useUnifiedTopology: true });
+
+const matchSchema = mongoose.Schema({
+  name: String,
+  id: String,
+  fileName: String,
+});
+
+const Match = mongoose.model("Match", matchSchema);
 
 const futarApi = axios.create({
   baseURL: "https://futar.bkk.hu/api/query/v1/ws/otp/api/where/",
@@ -28,22 +40,29 @@ async function nearbyVehicles(req, res) {
     const { routes } = response.data.data.references;
 
     const data = vehicles.map((vehicle) => {
-      const { routeId, location, bearing, licensePlate, label } = vehicle;
+      const {
+        routeId,
+        tripId,
+        location,
+        bearing,
+        licensePlate,
+        label,
+      } = vehicle;
       const { shortName, description, type, color } = routes[routeId];
 
       return {
         vehicle: {
-          routeId,
           location,
           bearing,
           licensePlate,
           label,
         },
-        route: {
+        trip: {
           shortName,
           description,
           type,
           color,
+          tripId,
         },
       };
     });
@@ -65,7 +84,51 @@ async function vehicleDetails(req, res) {
       },
     });
 
-    res.send(response.data);
+    const { entry, references } = response.data.data;
+    const { stopTimes, vehicle } = entry;
+    const { stops, trips, routes } = references;
+    const {
+      routeId,
+      tripId,
+      stopSequence,
+      stopDistancePercent,
+      location,
+      bearing,
+    } = vehicle;
+    const { shortName, type, color } = routes[routeId];
+    const { tripHeadsign } = trips[tripId];
+
+    const finalStops = await Promise.all(
+      stopTimes.map(async (stopTime) => {
+        const { predictedArrivalTime } = stopTime;
+        const { name, lat, lon } = stops[stopTime.stopId];
+        const { fileName } = await Match.findOne({ name });
+
+        return {
+          name,
+          lat,
+          lon,
+          fileName,
+          predictedArrivalTime,
+        };
+      })
+    );
+
+    const finalTrip = {
+      shortName,
+      tripHeadsign,
+      type,
+      color,
+    };
+
+    const finalVehicle = {
+      stopSequence,
+      stopDistancePercent,
+      location,
+      bearing,
+    };
+
+    res.send({ vehicle: finalVehicle, trip: finalTrip, stops: finalStops });
   } catch (e) {
     console.error(e);
     res.send("error!");
