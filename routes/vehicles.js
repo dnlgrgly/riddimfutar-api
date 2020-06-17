@@ -1,6 +1,5 @@
 const axios = require("axios");
 const mongoose = require("mongoose");
-const { Db } = require("mongodb");
 
 mongoose.connect(process.env.MONGO_URL, { useUnifiedTopology: true });
 
