@@ -32,15 +32,19 @@ async function nearbyVehicles(req, res) {
       const { shortName, description, type, color } = routes[routeId];
 
       return {
-        routeId,
-        location,
-        bearing,
-        licensePlate,
-        label,
-        shortName,
-        description,
-        type,
-        color,
+        vehicle: {
+          routeId,
+          location,
+          bearing,
+          licensePlate,
+          label,
+        },
+        route: {
+          shortName,
+          description,
+          type,
+          color,
+        },
       };
     });
 
