@@ -21,15 +21,26 @@ async function nearbyVehicles(req, res) {
       },
     });
 
-    const vehicles = response.data.data.list;
-    const { stops, trips, routes } = response.data.data.references;
+    // vehicles without a routeId are usually out of service
+    const vehicles = response.data.data.list.filter(
+      (vehicle) => vehicle.routeId
+    );
+    const { routes } = response.data.data.references;
 
     const data = vehicles.map((vehicle) => {
+      const { routeId, location, bearing, licensePlate, label } = vehicle;
+      const { shortName, description, type, color } = routes[routeId];
+
       return {
-        ...vehicle,
-        trip: trips[vehicle.tripId],
-        stop: stops[vehicle.stopId],
-        route: routes[vehicle.routeId],
+        routeId,
+        location,
+        bearing,
+        licensePlate,
+        label,
+        shortName,
+        description,
+        type,
+        color,
       };
     });
 
