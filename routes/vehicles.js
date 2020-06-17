@@ -36,7 +36,7 @@ async function nearbyVehicles(req, res) {
     const vehicles = response.data.data.list.filter(
       (vehicle) => vehicle.routeId
     );
-    const { routes } = response.data.data.references;
+    const { routes, trips } = response.data.data.references;
 
     const data = vehicles.map((vehicle) => {
       const {
@@ -47,7 +47,8 @@ async function nearbyVehicles(req, res) {
         licensePlate,
         label,
       } = vehicle;
-      const { shortName, description, type, color } = routes[routeId];
+      const { shortName, type, color } = routes[routeId];
+      const { tripHeadsign } = trips[tripId];
 
       return {
         vehicle: {
@@ -58,7 +59,7 @@ async function nearbyVehicles(req, res) {
         },
         trip: {
           shortName,
-          description,
+          tripHeadsign,
           type,
           color,
           tripId,
