@@ -32,9 +32,9 @@ async function nearbyVehicles(req, res) {
       },
     });
 
-    // vehicles without a routeId are usually out of service
+    // vehicles without a routeId and tripId are usually out of service
     const vehicles = response.data.data.list.filter(
-      (vehicle) => vehicle.routeId
+      (vehicle) => vehicle.routeId && vehicle.tripId
     );
     const { routes, trips } = response.data.data.references;
 
