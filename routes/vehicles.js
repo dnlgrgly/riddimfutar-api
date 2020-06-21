@@ -102,13 +102,13 @@ async function vehicleDetails(req, res) {
       stopTimes.map(async (stopTime) => {
         const { predictedArrivalTime } = stopTime;
         const { name, lat, lon } = stops[stopTime.stopId];
-        const { fileName } = await Match.findOne({ name });
+        const res = await Match.findOne({ name });
 
         return {
           name,
           lat,
           lon,
-          fileName,
+          fileName: res && res.fileName,
           predictedArrivalTime,
         };
       })
