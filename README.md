@@ -14,24 +14,11 @@ The stop and route data are provided by the BKK via the [BKK FUTÁR API](https:/
 
 Our API has the following endpoints:
 
-### if the "Proposal A" wins
-
-- **GET /stops?lat={lat}&lon={lon}**
-  - Get nearby stations. Provide the user latitude and longitude in the URL params.
-- **GET /stops/{id}**
-  - Get a particular stop's data. Useful for downloading the sound signal of the stop.
-- **GET /routes/{id}**
-  - Get a particular route data. Useful to get the upcoming stops on the ride.
-- **GET /musicID**
-  - Get a random music ID that the user will hear for the next stop. The music will be downloaded from the bucket, alongside it's metadata (like the artist and an album art)
-
-### if the "Proposal B" wins
-
 - **GET /vehicles?lat={lat}&lon={lon}**
   - Get nearby vehicles. Provide the user latitude and longitude in the URL params.
-- **GET /vehicles/{id}**
+- **GET /vehicle/?id={id}**
   - Get a particular vehicle's data. Useful for downloading the sound signal of the stop.
-- **GET /musicID**
+- **GET /music/{genre}**
   - Get a random music ID that the user will hear for the next stop. The music will be downloaded from the bucket, alongside it's metadata (like the artist and an album art)
 
 ## How do you start development?
