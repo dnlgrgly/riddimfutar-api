@@ -32,6 +32,8 @@ async function nearbyVehicles(req, res) {
       },
     });
 
+    console.log(response);
+
     // vehicles without a routeId and tripId are usually out of service
     const vehicles = response.data.data.list.filter(
       (vehicle) => vehicle.routeId && vehicle.tripId
@@ -83,6 +85,8 @@ async function vehicleDetails(req, res) {
         includeReferences: true,
       },
     });
+
+    console.log(response);
 
     const { entry, references } = response.data.data;
     const { stopTimes, vehicle } = entry;
