@@ -15,6 +15,6 @@ router.get("/music/:type", fetchMusic);
 
 router.get("/vehicles", nearbyVehicles);
 router.get("/vehicle/:id", vehicleDetails);
-router.get("/vehicle/:id/percent", vehiclePercent);
+router.get("/percents/:id", vehiclePercent);
 
 module.exports = router;
