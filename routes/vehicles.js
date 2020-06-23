@@ -78,13 +78,17 @@ async function nearbyVehicles(req, res) {
 
 async function vehicleDetails(req, res) {
   try {
+    console.log("request in!");
+
     const response = await futarApi.get("/trip-details.json", {
       params: {
-        tripId: req.query.id,
+        tripId: req.params.id,
         // vehicleId: req.query.id,
         includeReferences: true,
       },
     });
+
+    console.log("response in!");
 
     const { entry, references } = response.data.data;
     const { stopTimes, vehicle } = entry;
@@ -100,21 +104,25 @@ async function vehicleDetails(req, res) {
     const { shortName, type, color } = routes[routeId];
     const { tripHeadsign } = trips[tripId];
 
+    console.log("aaa");
+
     const finalStops = await Promise.all(
       stopTimes.map(async (stopTime) => {
         const { predictedArrivalTime } = stopTime;
         const { name, lat, lon } = stops[stopTime.stopId];
-        const res = await Match.findOne({ name });
+        // const res = await Match.findOne({ name });
 
         return {
           name,
           lat,
           lon,
-          fileName: res && res.fileName,
+          // fileName: res && res.fileName,
           predictedArrivalTime,
         };
       })
     );
+
+    console.log("bbb");
 
     const finalTrip = {
       shortName,
@@ -130,13 +138,38 @@ async function vehicleDetails(req, res) {
       bearing,
     };
 
+    console.log("almost sent!");
+
     res.send({ vehicle: finalVehicle, trip: finalTrip, stops: finalStops });
   } catch (e) {
     console.error(e);
     res.send("error!");
   }
 }
+
+async function vehiclePercent(req, res) {
+  try {
+    const response = await futarApi.get("/trip-details.json", {
+      params: {
+        tripId: req.query.id,
+        includeReferences: false,
+      },
+    });
+
+    const { entry } = response.data.data;
+    const { vehicle } = entry;
+
+    const { stopSequence, stopDistancePercent } = vehicle;
+
+    res.send({ stopSequence, stopDistancePercent });
+  } catch (e) {
+    console.error(e);
+    res.send("error!");
+  }
+}
+
 module.exports = {
   nearbyVehicles,
   vehicleDetails,
+  vehiclePercent,
 };

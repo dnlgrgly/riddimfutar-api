@@ -3,13 +3,18 @@ const router = new Router();
 
 const { metadata } = require("./metadata.js");
 const { fetchMusic } = require("./music.js");
-const { nearbyVehicles, vehicleDetails } = require("./vehicles.js");
+const {
+  nearbyVehicles,
+  vehicleDetails,
+  vehiclePercent,
+} = require("./vehicles.js");
 
 router.get("/metadata", metadata);
 
 router.get("/music/:type", fetchMusic);
 
-router.get("/vehicle", vehicleDetails);
 router.get("/vehicles", nearbyVehicles);
+router.get("/vehicle/:id", vehicleDetails);
+router.get("/vehicle/:id/percent", vehiclePercent);
 
 module.exports = router;
