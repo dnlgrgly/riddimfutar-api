@@ -1,6 +1,9 @@
 const axios = require("axios");
 const mongoose = require("mongoose");
 
+console.log("process.env.MONGO_URL");
+console.log(process.env.MONGO_URL);
+
 mongoose.connect(process.env.MONGO_URL, { useUnifiedTopology: true });
 
 const matchSchema = mongoose.Schema({
