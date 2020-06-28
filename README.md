@@ -20,8 +20,6 @@ Our API has the following endpoints:
   - Get nearby vehicles. Provide the user latitude and longitude in the URL params.
 - **GET /vehicle/{id}**
   - Get a particular vehicle's data. Useful for downloading the sound signal of the stop.
-- **GET /vehicle/{id}/percent**
-  - Get a particular vehicle's stop sequence and percentage. Quick endpoint.
 - **GET /music/{genre}**
   - Get a random music ID that the user will hear for the next stop. The URL will be downloaded from the bucket, alongside it's metadata (like the artist and an album art) and waveform.
 

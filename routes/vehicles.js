@@ -1,9 +1,6 @@
 const axios = require("axios");
 const mongoose = require("mongoose");
 
-console.log("process.env.MONGO_URL");
-console.log(process.env.MONGO_URL);
-
 mongoose.connect(process.env.MONGO_URL, { useUnifiedTopology: true });
 
 const matchSchema = mongoose.Schema({
@@ -138,29 +135,7 @@ async function vehicleDetails(req, res) {
   }
 }
 
-async function vehiclePercent(req, res) {
-  try {
-    const response = await futarApi.get("/trip-details.json", {
-      params: {
-        tripId: req.params.id,
-        includeReferences: false,
-      },
-    });
-
-    const { entry } = response.data.data;
-    const { vehicle } = entry;
-
-    const { stopSequence, stopDistancePercent } = vehicle;
-
-    res.send({ stopSequence, stopDistancePercent });
-  } catch (e) {
-    console.error(e);
-    res.send("error!");
-  }
-}
-
 module.exports = {
   nearbyVehicles,
   vehicleDetails,
-  vehiclePercent,
 };

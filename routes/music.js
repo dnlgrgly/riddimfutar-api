@@ -30,11 +30,21 @@ async function fetchMusic(req, res) {
     // get index of a random folder
     const index = getRandomInt(0, possibleFolders.length - 1);
     const result = [];
+    const folder = possibleFolders[index];
+
+    // artist, title and files with breakpoint and other metadata
+    const configRaw = await storage
+      .bucket(bucketName)
+      .file(`${req.params.type}/${folder}/config.json`)
+      .download();
+
+    const config = JSON.parse(configRaw);
+    const { artist, title, files: fileConfigs } = config;
 
     for (let i = 0; files.length > i; i++) {
       const { name } = files[i];
       if (
-        name.includes(`${req.params.type}/${possibleFolders[index]}`) &&
+        name.includes(`${req.params.type}/${folder}`) &&
         name.substring(name.length - 3, name.length) == "mp3"
       ) {
         const waveform = await storage
@@ -42,19 +52,23 @@ async function fetchMusic(req, res) {
           .file(name.replace(".mp3", ".json"))
           .download();
 
+        const configIndex = fileConfigs.findIndex(({ name: configName }) =>
+          name.includes(configName)
+        );
+
+        const { breakpoint, loopable, announceUnder } = fileConfigs[configIndex];
+
         result.push({
           pathURL: `https://storage.googleapis.com/riddim/${name}`,
+          breakpoint,
+          loopable,
+          announceUnder,
           waveform: JSON.parse(waveform),
         });
       }
     }
 
-    const config = await storage
-      .bucket(bucketName)
-      .file(`${req.params.type}/${possibleFolders[index]}/config.json`)
-      .download();
-
-    res.send({ config: JSON.parse(config), files: result });
+    res.send({ artist, title, files: result });
   } catch (e) {
     console.error(e);
     res.send("error!");
