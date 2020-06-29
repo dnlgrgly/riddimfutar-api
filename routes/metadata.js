@@ -1,11 +1,11 @@
 async function metadata(req, res) {
   res.send({
     genres: [{ path: "riddim", displayName: "Riddim" }],
-    message: "Szia, udv az appban, itt a fejleszto beszel!",
-    lowerLeftLatitude: 45.877284,
-    lowerLeftLongitude: 16.623735,
-    upperRightLatitude: 48.5084,
-    upperRightLongitude: 22.524288,
+    message: "Udv az appban, itt a fejleszto beszel! A tavolsagmerest kellene tesztelni, ehhez mar elesben jarmure kellene szallni. *** Jeleneg az M3-mas metro vonalan es a 2-es, 3-mas, 4-es es 6-os villamosok vonalain felujitas miatt tereles van. Kerjuk figyeld a BKK-s utastajekoztatast. ***",
+    lowerLeftLatitude: 47.57564,
+    lowerLeftLongitude: 18.94222,
+    upperRightLatitude: 47.588130,
+    upperRightLongitude: 19.07639,
   });
 }
 
