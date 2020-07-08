@@ -27,8 +27,10 @@ async function fetchMusic(req, res) {
       }
     }
 
+    console.log(possibleFolders);
+
     // get index of a random folder
-    const index = getRandomInt(0, possibleFolders.length - 1);
+    const index = getRandomInt(0, possibleFolders.length);
     const result = [];
     const folder = possibleFolders[index];
 
