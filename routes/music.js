@@ -47,11 +47,11 @@ async function fetchMusic(req, res) {
       const { name } = files[i];
       if (
         name.includes(`${req.params.type}/${folder}`) &&
-        name.substring(name.length - 3, name.length) == "mp3"
+        name.substring(name.length - 3, name.length) == "wav"
       ) {
         const waveform = await storage
           .bucket(bucketName)
-          .file(name.replace(".mp3", ".json"))
+          .file(name.replace(".wav", ".json"))
           .download();
 
         const configIndex = fileConfigs.findIndex(({ name: configName }) =>
