@@ -32,42 +32,58 @@ async function nearbyVehicles(req, res) {
       },
     });
 
-    // vehicles without a routeId and tripId are usually out of service
-    const vehicles = response.data.data.list.filter(
-      (vehicle) => vehicle.routeId && vehicle.tripId
-    );
     const { routes, trips } = response.data.data.references;
+    
+    const vehicles = response.data.data.list.filter(async (vehicle) => {
+      // vehicles without a routeId and tripId are usually out of service
+      if (!vehicle.routeId || vehicle.tripId) {
+        return false;
+      }
 
-    const data = vehicles.map((vehicle) => {
-      const {
-        routeId,
-        tripId,
-        location,
-        bearing,
-        licensePlate,
-        label,
-      } = vehicle;
-      const { shortName, type, color } = routes[routeId];
-      const { tripHeadsign } = trips[tripId];
+      const vehicleResponse = await futarApi.get("/trip-details.json", {
+        params: {
+          tripId: vehicle.tripId,
+          // vehicleId: req.query.id,
+          includeReferences: false,
+        },
+      });
 
-      return {
-        vehicle: {
+      const numOfStops = vehicleResponse.data.data.entry.stopTimes.length;
+
+      // only process vehiles that aren't currently progressing to their last stop
+      if (vehicle.stopSequence >= numOfStops - 1) {
+        const {
+          routeId,
+          tripId,
           location,
           bearing,
           licensePlate,
           label,
-        },
-        trip: {
-          shortName,
-          tripHeadsign,
-          type,
-          color,
-          tripId,
-        },
-      };
+        } = vehicle;
+        const { shortName, type, color } = routes[routeId];
+        const { tripHeadsign } = trips[tripId];
+
+        return {
+          vehicle: {
+            location,
+            bearing,
+            licensePlate,
+            label,
+          },
+          trip: {
+            shortName,
+            tripHeadsign,
+            type,
+            color,
+            tripId,
+          },
+        };
+      } else {
+        return false;
+      }
     });
 
-    res.send(data);
+    res.send(vehicles);
   } catch (e) {
     console.error(e);
     res.send("error!");
