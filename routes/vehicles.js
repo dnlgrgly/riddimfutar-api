@@ -1,5 +1,6 @@
 const axios = require("axios");
 const mongoose = require("mongoose");
+const { filter } = require("p-iteration");
 
 mongoose.connect(process.env.MONGO_URL, { useUnifiedTopology: true });
 
@@ -34,7 +35,7 @@ async function nearbyVehicles(req, res) {
 
     const { routes, trips } = response.data.data.references;
 
-    const vehicles = response.data.data.list.filter(async (vehicle) => {
+    const vehicles = await filter(response.data.data.list, async (vehicle) => {
       // vehicles without a routeId and tripId are usually out of service
       if (!vehicle.routeId || !vehicle.tripId) return false;
 
@@ -47,7 +48,8 @@ async function nearbyVehicles(req, res) {
 
       const numberOfStops = vehicleResponse.data.data.entry.stopTimes.length;
 
-      if (vehicle.stopSequence <= numberOfStops - 1) {
+      // there is at least one stop and the vehicle is currently not approaching the terminus
+      if (numberOfStops >= 2 && vehicle.stopSequence <= numberOfStops - 2) {
         return true;
       } else {
         return false;
