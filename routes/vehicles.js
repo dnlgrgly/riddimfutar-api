@@ -33,25 +33,29 @@ async function nearbyVehicles(req, res) {
     });
 
     const { routes, trips } = response.data.data.references;
-    
+
     const vehicles = response.data.data.list.filter(async (vehicle) => {
       // vehicles without a routeId and tripId are usually out of service
-      if (!vehicle.routeId || vehicle.tripId) {
-        return false;
-      }
+      if (!vehicle.routeId || !vehicle.tripId) return false;
 
       const vehicleResponse = await futarApi.get("/trip-details.json", {
         params: {
           tripId: vehicle.tripId,
-          // vehicleId: req.query.id,
           includeReferences: false,
         },
       });
 
-      const numOfStops = vehicleResponse.data.data.entry.stopTimes.length;
+      const numberOfStops = vehicleResponse.data.data.entry.stopTimes.length;
 
-      // only process vehiles that aren't currently progressing to their last stop
-      if (vehicle.stopSequence >= numOfStops - 1) {
+      if (vehicle.stopSequence <= numberOfStops - 1) {
+        return true;
+      } else {
+        return false;
+      }
+    });
+
+    let data = vehicles.map((vehicle) => {
+      try {
         const {
           routeId,
           tripId,
@@ -60,6 +64,7 @@ async function nearbyVehicles(req, res) {
           licensePlate,
           label,
         } = vehicle;
+
         const { shortName, type, color } = routes[routeId];
         const { tripHeadsign } = trips[tripId];
 
@@ -78,12 +83,16 @@ async function nearbyVehicles(req, res) {
             tripId,
           },
         };
-      } else {
+      } catch (e) {
+        console.log(e);
         return false;
       }
     });
 
-    res.send(vehicles);
+    // filter out false values
+    data = data.filter((i) => i);
+
+    res.send(data);
   } catch (e) {
     console.error(e);
     res.send("error!");
