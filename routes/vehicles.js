@@ -18,6 +18,7 @@ const matchSchema = mongoose.Schema({
   name: String,
   id: String,
   fileName: String,
+  musicOverride: String,
 });
 
 const Match = mongoose.model("Match", matchSchema);
@@ -138,15 +139,17 @@ async function vehicleDetails(req, res) {
     const finalStops = await Promise.all(
       stopTimes.map(async (stopTime) => {
         const { predictedArrivalTime } = stopTime;
-        const { name, lat, lon } = stops[stopTime.stopId];
-        const res = await Match.findOne({ name });
+        const { name, lat, lon, id, parentStationId } = stops[stopTime.stopId];
+        const stopId = id ? id : parentStationId;
+        const res = await Match.findOne({ id: stopId });
 
         return {
-          name,
+          name: res ? res.name : name,
           lat,
           lon,
           fileName: res ? res.fileName : randomStopName(),
           predictedArrivalTime,
+          musicOverride: res && res.musicOverride ? res.musicOverride : null,
         };
       })
     );
