@@ -4,6 +4,16 @@ const { filter } = require("p-iteration");
 
 mongoose.connect(process.env.MONGO_URL, { useUnifiedTopology: true });
 
+const randomStopName = () => {
+  const fakeStops = [
+    "EF-blahalouisiana.mp3",
+    "EF-huszaria.mp3",
+    "EF-rakosborzaszto.mp3",
+  ];
+
+  return fakeStops[Math.floor(Math.random() * fakeStops.length)];
+};
+
 const matchSchema = mongoose.Schema({
   name: String,
   id: String,
@@ -135,7 +145,7 @@ async function vehicleDetails(req, res) {
           name,
           lat,
           lon,
-          fileName: res && res.fileName,
+          fileName: res ? res.fileName : randomStopName(),
           predictedArrivalTime,
         };
       })
