@@ -41,8 +41,6 @@ const futarApi = axios.create({
 });
 
 async function nearbyVehicles(req, res) {
-  console.log("THIS JUST IN: NEARBYVEHICLES");
-
   try {
     const response = await futarApi.get("/vehicles-for-location.json", {
       params: {
