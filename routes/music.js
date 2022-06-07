@@ -47,23 +47,26 @@ async function fetchMusic(req, res) {
         name.includes(`${req.params.type}/${folder}`) &&
         name.substring(name.length - 3, name.length) == "mp3"
       ) {
-        const waveform = await storage
-          .bucket(bucketName)
-          .file(name.replace(".mp3", ".json"))
-          .download();
+        // TODO: once needed, re-add waveform data
+        // const waveform = await storage
+        //   .bucket(bucketName)
+        //   .file(name.replace(".mp3", ".json"))
+        //   .download();
 
         const configIndex = fileConfigs.findIndex(({ name: configName }) =>
           name.includes(configName)
         );
 
-        const { breakpoint, loopable, announceUnder } = fileConfigs[configIndex];
+        const { breakpoint, loopable, announceUnder } =
+          fileConfigs[configIndex];
 
         result.push({
           pathURL: `https://storage.googleapis.com/riddim/${name}`,
           breakpoint,
           loopable,
           announceUnder,
-          waveform: JSON.parse(waveform),
+          // TODO: once needed, re-add waveform data
+          // waveform: JSON.parse(waveform),
         });
       }
     }
