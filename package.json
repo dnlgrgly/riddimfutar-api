@@ -27,8 +27,7 @@
     "dayjs": "^1.11.3",
     "dotenv": "^16.0.1",
     "express": "^4.17.1",
-    "mongoose": "^5.9.18",
-    "p-iteration": "^1.1.8"
+    "mongoose": "^5.9.18"
   },
   "devDependencies": {
     "env-cmd": "^10.1.0",

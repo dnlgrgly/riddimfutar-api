@@ -1,8 +1,8 @@
 const axios = require("axios");
 const mongoose = require("mongoose");
 const dayjs = require("dayjs");
-const utc = require('dayjs/plugin/utc')
-const timezone = require('dayjs/plugin/timezone') // dependent on utc plugin
+const utc = require("dayjs/plugin/utc");
+const timezone = require("dayjs/plugin/timezone"); // dependent on utc plugin
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -41,6 +41,8 @@ const futarApi = axios.create({
 });
 
 async function nearbyVehicles(req, res) {
+  console.log("THIS JUST IN: NEARBYVEHICLES");
+
   try {
     const response = await futarApi.get("/vehicles-for-location.json", {
       params: {
@@ -49,50 +51,28 @@ async function nearbyVehicles(req, res) {
         latSpan: 0.0091,
         lonSpan: 0.0111,
         radius: 1,
-        includeReferences: true,
+        includeReferences: "routes,trips",
       },
     });
 
-    const { routes, trips } = response.data.data.references;
+    const { list, references } = response.data.data;
+    const { routes, trips } = references;
 
-    // const vehicles = await filter(response.data.data.list, async (vehicle) => {
-    //   // vehicles without a routeId and tripId are usually out of service
-    //   if (!vehicle.routeId || !vehicle.tripId) return false;
+    // vehicles without a routeId and tripId are usually out of service
+    // BKK_9999 IDs are for "ASP" special services (e.g. out of service, going to garage, etc.)
+    const vehicles = list.filter((vehicle) => {
+      return (
+        vehicle.routeId &&
+        vehicle.tripId &&
+        vehicle.routeId !== "BKK_9999" &&
+        vehicle.vehicleRouteType !== "RAIL"
+      );
+    });
 
-    //   const vehicleResponse = await futarApi.get("/trip-details.json", {
-    //     params: {
-    //       tripId: vehicle.tripId,
-    //       includeReferences: false,
-    //     },
-    //   });
-
-    //   console.log(vehicle.tripId)
-
-    //   if(!vehicleResponse.response || vehicleResponse.status !== 200) {
-    //     console.log("BEEBEE");
-    //     return false;
-    //   }
-
-    //   const numberOfStops = vehicleResponse.data.data.entry.stopTimes.length;
-
-    //   // there is at least one stop and the vehicle is currently not approaching the terminus
-    //   if (numberOfStops >= 2 && vehicle.stopSequence <= numberOfStops - 2) {
-    //     return true;
-    //   } else {
-    //     return false;
-    //   }
-    // });
-
-    let data = response.data.data.list.map((vehicle) => {
+    let data = vehicles.map((vehicle) => {
       try {
-        const {
-          routeId,
-          tripId,
-          location,
-          bearing,
-          licensePlate,
-          label,
-        } = vehicle;
+        const { routeId, tripId, location, bearing, licensePlate, label } =
+          vehicle;
 
         const { shortName, type, color } = routes[routeId];
         const { tripHeadsign } = trips[tripId];
@@ -113,7 +93,7 @@ async function nearbyVehicles(req, res) {
           },
         };
       } catch (e) {
-        console.log(e);
+        console.error(e);
         return false;
       }
     });
@@ -134,7 +114,7 @@ async function vehicleDetails(req, res) {
       params: {
         tripId: req.params.id,
         includeReferences: "stops,trips,routes",
-        date: dayjs().format("YYYYMMDD")
+        date: dayjs().format("YYYYMMDD"),
       },
     });
 
