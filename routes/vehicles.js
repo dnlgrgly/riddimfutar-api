@@ -11,6 +11,16 @@ dayjs.tz.setDefault("Hungary/Budapest");
 
 mongoose.connect(process.env.MONGO_URL, { useUnifiedTopology: true });
 
+const calculateDistance = (lat1, lon1, lat2, lon2) => {
+  var p = 0.017453292519943295;
+  var c = Math.cos;
+  var a =
+    0.5 -
+    c((lat2 - lat1) * p) / 2 +
+    (c(lat1 * p) * c(lat2 * p) * (1 - c((lon2 - lon1) * p))) / 2;
+  return 12742 * Math.asin(Math.sqrt(a));
+};
+
 const randomStopName = () => {
   const fakeStops = [
     "EF-geciutca.mp3",
@@ -42,10 +52,12 @@ const futarApi = axios.create({
 
 async function nearbyVehicles(req, res) {
   try {
+    const { lat, lon } = req.query;
+
     const response = await futarApi.get("/vehicles-for-location.json", {
       params: {
-        lat: req.query.lat,
-        lon: req.query.lon,
+        lat,
+        lon,
         latSpan: 0.0091,
         lonSpan: 0.0111,
         radius: 1,
@@ -69,19 +81,11 @@ async function nearbyVehicles(req, res) {
 
     let data = vehicles.map((vehicle) => {
       try {
-        const { routeId, tripId, location, bearing, licensePlate, label } =
-          vehicle;
-
+        const { routeId, tripId, location } = vehicle;
         const { shortName, type, color } = routes[routeId];
         const { tripHeadsign } = trips[tripId];
 
         return {
-          vehicle: {
-            location,
-            bearing,
-            licensePlate,
-            label,
-          },
           trip: {
             shortName,
             tripHeadsign,
@@ -89,6 +93,7 @@ async function nearbyVehicles(req, res) {
             color,
             tripId,
           },
+          distance: calculateDistance(lat, lon, location.lat, location.lon),
         };
       } catch (e) {
         console.error(e);
@@ -98,6 +103,7 @@ async function nearbyVehicles(req, res) {
 
     // filter out false values
     data = data.filter((i) => i);
+    data = data.sort((a, b) => a.distance - b.distance);
 
     res.send(data);
   } catch (e) {
