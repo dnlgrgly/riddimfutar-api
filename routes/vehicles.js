@@ -1,14 +1,23 @@
 const axios = require("axios");
 const mongoose = require("mongoose");
-const { filter } = require("p-iteration");
+const dayjs = require("dayjs");
+const utc = require('dayjs/plugin/utc')
+const timezone = require('dayjs/plugin/timezone') // dependent on utc plugin
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
+
+dayjs.tz.setDefault("Hungary/Budapest");
 
 mongoose.connect(process.env.MONGO_URL, { useUnifiedTopology: true });
 
 const randomStopName = () => {
   const fakeStops = [
-    "EF-blahalouisiana.mp3",
+    "EF-geciutca.mp3",
     "EF-huszaria.mp3",
-    "EF-rakosborzaszto.mp3",
+    "EF-orgia.mp3",
+    "EF-rakosmegyer.mp3",
+    "EF-rakosvagy.mp3",
   ];
 
   return fakeStops[Math.floor(Math.random() * fakeStops.length)];
@@ -24,7 +33,7 @@ const matchSchema = mongoose.Schema({
 const Match = mongoose.model("Match", matchSchema);
 
 const futarApi = axios.create({
-  baseURL: "https://futar.bkk.hu/api/query/v1/ws/otp/api/where/",
+  baseURL: "https://go.bkk.hu/api/query/v1/ws/otp/api/where/",
   params: {
     key: "riddimfutar",
     appVersion: "1.0",
@@ -46,28 +55,35 @@ async function nearbyVehicles(req, res) {
 
     const { routes, trips } = response.data.data.references;
 
-    const vehicles = await filter(response.data.data.list, async (vehicle) => {
-      // vehicles without a routeId and tripId are usually out of service
-      if (!vehicle.routeId || !vehicle.tripId) return false;
+    // const vehicles = await filter(response.data.data.list, async (vehicle) => {
+    //   // vehicles without a routeId and tripId are usually out of service
+    //   if (!vehicle.routeId || !vehicle.tripId) return false;
 
-      const vehicleResponse = await futarApi.get("/trip-details.json", {
-        params: {
-          tripId: vehicle.tripId,
-          includeReferences: false,
-        },
-      });
+    //   const vehicleResponse = await futarApi.get("/trip-details.json", {
+    //     params: {
+    //       tripId: vehicle.tripId,
+    //       includeReferences: false,
+    //     },
+    //   });
 
-      const numberOfStops = vehicleResponse.data.data.entry.stopTimes.length;
+    //   console.log(vehicle.tripId)
 
-      // there is at least one stop and the vehicle is currently not approaching the terminus
-      if (numberOfStops >= 2 && vehicle.stopSequence <= numberOfStops - 2) {
-        return true;
-      } else {
-        return false;
-      }
-    });
+    //   if(!vehicleResponse.response || vehicleResponse.status !== 200) {
+    //     console.log("BEEBEE");
+    //     return false;
+    //   }
 
-    let data = vehicles.map((vehicle) => {
+    //   const numberOfStops = vehicleResponse.data.data.entry.stopTimes.length;
+
+    //   // there is at least one stop and the vehicle is currently not approaching the terminus
+    //   if (numberOfStops >= 2 && vehicle.stopSequence <= numberOfStops - 2) {
+    //     return true;
+    //   } else {
+    //     return false;
+    //   }
+    // });
+
+    let data = response.data.data.list.map((vehicle) => {
       try {
         const {
           routeId,
@@ -117,8 +133,8 @@ async function vehicleDetails(req, res) {
     const response = await futarApi.get("/trip-details.json", {
       params: {
         tripId: req.params.id,
-        // vehicleId: req.query.id,
-        includeReferences: true,
+        includeReferences: "stops,trips,routes",
+        date: dayjs().format("YYYYMMDD")
       },
     });
 
@@ -139,9 +155,8 @@ async function vehicleDetails(req, res) {
     const finalStops = await Promise.all(
       stopTimes.map(async (stopTime) => {
         const { predictedArrivalTime } = stopTime;
-        const { name, lat, lon, id, parentStationId } = stops[stopTime.stopId];
-        const stopId = id ? id : parentStationId;
-        const res = await Match.findOne({ id: stopId });
+        const { name, lat, lon } = stops[stopTime.stopId];
+        const res = await Match.findOne({ name });
 
         return {
           name: res ? res.name : name,
