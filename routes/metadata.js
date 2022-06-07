@@ -1,7 +1,7 @@
 async function metadata(req, res) {
   res.send({
     genres: [{ path: "riddim", displayName: "Riddim" }],
-    message: "Udv az appban! Mar van Facebook-unk is: fb.me/riddimfutarapp *** Kerjuk viselj maszkot a jarmuveken! *** RIDDIM DJ vagy? Lehet hogy pont teged keresunk. Reszletek Facebookon: fb.me/riddimfutarapp ***",
+    message: "Udv az appban! *** RIDDIM producer vagy? Lehet hogy pont teged keresunk. Reszletek Facebookon: fb.me/riddimfutarapp ***",
     lowerLeftLatitude: 47.170852,
     lowerLeftLongitude: 18.878917,
     upperRightLatitude: 47.665298,
