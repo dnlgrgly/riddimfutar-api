@@ -7,8 +7,6 @@ const timezone = require("dayjs/plugin/timezone"); // dependent on utc plugin
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
-dayjs.tz.setDefault("Hungary/Budapest");
-
 mongoose.connect(process.env.MONGO_URL, { useUnifiedTopology: true });
 
 const calculateDistance = (lat1, lon1, lat2, lon2) => {
@@ -22,13 +20,7 @@ const calculateDistance = (lat1, lon1, lat2, lon2) => {
 };
 
 const randomStopName = () => {
-  const fakeStops = [
-    "EF-geciutca.mp3",
-    "EF-huszaria.mp3",
-    "EF-orgia.mp3",
-    "EF-rakosmegyer.mp3",
-    "EF-rakosvagy.mp3",
-  ];
+  const fakeStops = ["EF-huszaria.mp3", "EF-rakosmegyer.mp3"];
 
   return fakeStops[Math.floor(Math.random() * fakeStops.length)];
 };
@@ -118,7 +110,7 @@ async function vehicleDetails(req, res) {
       params: {
         tripId: req.params.id,
         includeReferences: "stops,trips,routes",
-        date: dayjs().format("YYYYMMDD"),
+        date: dayjs().tz("Europe/Budapest").format("YYYYMMDD"),
       },
     });
 
